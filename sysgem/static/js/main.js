@@ -173,7 +173,9 @@ confirmDeleteBtn.addEventListener('click', async () => {
 });
 
 function acessarOrg(schema) {
-    window.location.href = `/${schema}/inicio`;
+    // Redireciona para o sistema de operação (que roda na porta 5000 por padrão)
+    const opUrl = `${window.location.protocol}//${window.location.hostname}:5000/${schema}/inicio`;
+    window.location.href = opUrl;
 }
 
 function showLoading(show) {

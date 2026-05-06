@@ -4,8 +4,7 @@ import os
 from sysgem_db.database import Database
 from sysgem_services.organization_service import OrganizationService
 from sysgem_services.gem_service import GemService
-from sysgem_routes.main_routes import main_bp
-from sysgem_routes.organization_routes import org_bp
+from sysgem_routes.op_main_routes import op_main_bp
 from sysgem_routes.gem_routes import gem_bp
 
 def create_app():
@@ -13,17 +12,15 @@ def create_app():
                 static_folder='static',
                 template_folder='templates')
 
-    # Logging configuration
     logging.basicConfig(
         level=logging.INFO,
         format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
         handlers=[
-            logging.FileHandler("sysgem.log"),
+            logging.FileHandler("sysgem_op.log"),
             logging.StreamHandler()
         ]
     )
 
-    # Database configuration
     DB_CONFIG = {
         "host": os.getenv("DB_HOST", "localhost"),
         "port": os.getenv("DB_PORT", "5432"),
@@ -36,23 +33,15 @@ def create_app():
     org_service = OrganizationService(db)
     gem_service = GemService(db)
 
-    # Store service in app config for access in routes
     app.config['ORG_SERVICE'] = org_service
     app.config['GEM_SERVICE'] = gem_service
 
-    # Register blueprints
-    app.register_blueprint(main_bp)
-    app.register_blueprint(org_bp)
+    app.register_blueprint(op_main_bp)
     app.register_blueprint(gem_bp, url_prefix='/<schema>')
 
-    # Global error handler for JSON responses
     @app.errorhandler(404)
     def not_found(e):
         return jsonify({"ok": False, "erro": "Recurso não encontrado"}), 404
-
-    @app.errorhandler(500)
-    def internal_error(e):
-        return jsonify({"ok": False, "erro": "Erro interno do servidor"}), 500
 
     return app
 
