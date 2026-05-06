@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SYSGEM - Operação</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <style>
+        body { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; display: flex; align-items: center; justify-content: center; font-family: 'Segoe UI', sans-serif; }
+        .login-card { background: white; padding: 40px; border-radius: 20px; box-shadow: 0 15px 35px rgba(0,0,0,0.2); width: 100%; max-width: 400px; }
+        .btn-primary { background: #764ba2; border: none; padding: 12px; border-radius: 10px; }
+        .btn-primary:hover { background: #667eea; }
+        .logo { font-size: 2.5rem; font-weight: 800; color: #764ba2; margin-bottom: 20px; text-align: center; }
+    </style>
+</head>
+<body>
+    <div class="login-card">
+        <div class="logo"><i class="bi bi-cloud-check-fill"></i> SYSGEM</div>
+        <h5 class="text-center mb-4">Acesso à Operação</h5>
+        <form action="/entrar" method="POST">
+            <div class="mb-3">
+                <label class="form-label">Identificador da Organização (Schema)</label>
+                <input type="text" name="schema" class="form-control" placeholder="ex: org_0001" required>
+            </div>
+            <button type="submit" class="btn btn-primary w-100">Acessar Sistema</button>
+        </form>
+        <div class="mt-4 text-center">
+            <small class="text-muted">Use o identificador fornecido pelo administrador.</small>
+        </div>
+    </div>
+</body>
+</html>
