@@ -30,23 +30,26 @@ function renderTable(data) {
     orgTableBody.innerHTML = '';
 
     if (data.length === 0) {
-        orgTableBody.innerHTML = '<tr><td colspan="5" class="text-center text-muted">Nenhuma organização encontrada</td></tr>';
+        orgTableBody.innerHTML = '<tr><td colspan="5" class="text-center text-muted p-5 animate__animated animate__fadeIn">Nenhuma organização encontrada na nuvem</td></tr>';
         return;
     }
 
-    data.forEach(org => {
+    data.forEach((org, index) => {
         const row = document.createElement('tr');
+        row.className = 'animate__animated animate__fadeInUp';
+        row.style.animationDelay = `${index * 0.1}s`;
+
         row.innerHTML = `
-            <td>${org.numero}</td>
-            <td><strong>${org.nome}</strong></td>
-            <td><code>${org.schema}</code></td>
-            <td>${new Date(org.criado_em).toLocaleString()}</td>
-            <td class="text-end">
-                <button class="btn btn-sm btn-outline-primary me-1" onclick="acessarOrg('${org.schema}')">
-                    <i class="bi bi-box-arrow-in-right"></i> Acessar
+            <td class="align-middle fw-bold text-primary">#${org.numero}</td>
+            <td class="align-middle"><span class="h6 mb-0">${org.nome}</span></td>
+            <td class="align-middle"><span class="badge-schema"><i class="bi bi-hdd-network me-1"></i>${org.schema}</span></td>
+            <td class="align-middle text-muted small"><i class="bi bi-calendar3 me-1"></i>${new Date(org.criado_em).toLocaleString()}</td>
+            <td class="text-end align-middle">
+                <button class="btn btn-sm btn-primary shadow-sm me-2" onclick="acessarOrg('${org.schema}')">
+                    <i class="bi bi-rocket-takeoff me-1"></i> Acessar
                 </button>
-                <button class="btn btn-sm btn-outline-danger" onclick="confirmarExclusao(${org.numero}, '${org.nome}')">
-                    <i class="bi bi-trash"></i>
+                <button class="btn btn-sm btn-outline-danger shadow-sm" onclick="confirmarExclusao(${org.numero}, '${org.nome}')">
+                    <i class="bi bi-trash3"></i>
                 </button>
             </td>
         `;
@@ -59,7 +62,11 @@ orgForm.addEventListener('submit', async (e) => {
     const nomeInput = document.getElementById('nome');
     const nome = nomeInput.value.trim();
 
-    if (!nome) return;
+    if (!nome) {
+        nomeInput.classList.add('animate__animated', 'animate__shakeX', 'is-invalid');
+        setTimeout(() => nomeInput.classList.remove('animate__animated', 'animate__shakeX'), 500);
+        return;
+    }
 
     showLoading(true);
     try {
@@ -72,18 +79,64 @@ orgForm.addEventListener('submit', async (e) => {
         const result = await res.json();
 
         if (result.ok) {
-            showToast('Sucesso', `Organização "${nome}" criada com sucesso!`, 'success');
+            // Success Animation
+            const card = nomeInput.closest('.card');
+            card.classList.add('animate__animated', 'animate__pulse');
+            setTimeout(() => card.classList.remove('animate__animated', 'animate__pulse'), 1000);
+
+            showToast('Nuvem Sincronizada', `Organização "${nome}" implantada com sucesso!`, 'success');
             nomeInput.value = '';
+            nomeInput.classList.remove('is-invalid');
             carregarOrganizacoes();
         } else {
-            showToast('Erro', result.erro, 'danger');
+            showToast('Falha na Implantação', result.erro, 'danger');
+            nomeInput.classList.add('is-invalid');
         }
     } catch (error) {
-        showToast('Erro', 'Falha ao criar organização', 'danger');
+        showToast('Erro Crítico', 'Falha ao conectar com o serviço de nuvem', 'danger');
     } finally {
         showLoading(false);
     }
 });
+
+// Real-time validation
+document.getElementById('nome').addEventListener('input', debounce(async (e) => {
+    const nome = e.target.value.trim();
+    const feedback = document.getElementById('validationFeedback');
+
+    if (nome.length < 3) {
+        feedback.innerHTML = '';
+        e.target.classList.remove('is-valid', 'is-invalid');
+        return;
+    }
+
+    try {
+        const res = await fetch(`/api/organizacoes/validar-nome?nome=${encodeURIComponent(nome)}`);
+        const result = await res.json();
+
+        if (result.ok && result.disponivel) {
+            e.target.classList.add('is-valid');
+            e.target.classList.remove('is-invalid');
+            feedback.innerHTML = '<span class="text-success"><i class="bi bi-check-all"></i> Nome disponível na nuvem</span>';
+        } else {
+            e.target.classList.add('is-invalid');
+            e.target.classList.remove('is-valid');
+            feedback.innerHTML = '<span class="text-danger"><i class="bi bi-exclamation-triangle"></i> Nome já utilizado ou inválido</span>';
+        }
+    } catch (e) {}
+}, 500));
+
+function debounce(func, wait) {
+    let timeout;
+    return function executedFunction(...args) {
+        const later = () => {
+            clearTimeout(timeout);
+            func(...args);
+        };
+        clearTimeout(timeout);
+        timeout = setTimeout(later, wait);
+    };
+}
 
 function confirmarExclusao(numero, nome) {
     orgToDelete = numero;
