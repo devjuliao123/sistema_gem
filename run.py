@@ -3,8 +3,10 @@ import logging
 import os
 from app.db.database import Database
 from app.services.organization_service import OrganizationService
+from app.services.gem_service import GemService
 from app.routes.main_routes import main_bp
 from app.routes.organization_routes import org_bp
+from app.routes.gem_routes import gem_bp
 
 def create_app():
     app = Flask(__name__,
@@ -32,13 +34,16 @@ def create_app():
 
     db = Database(DB_CONFIG)
     org_service = OrganizationService(db)
+    gem_service = GemService(db)
 
     # Store service in app config for access in routes
     app.config['ORG_SERVICE'] = org_service
+    app.config['GEM_SERVICE'] = gem_service
 
     # Register blueprints
     app.register_blueprint(main_bp)
     app.register_blueprint(org_bp)
+    app.register_blueprint(gem_bp, url_prefix='/<schema>')
 
     # Global error handler for JSON responses
     @app.errorhandler(404)

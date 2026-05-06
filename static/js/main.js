@@ -173,7 +173,7 @@ confirmDeleteBtn.addEventListener('click', async () => {
 });
 
 function acessarOrg(schema) {
-    alert(`Acessando organização: ${schema} (Placeholder)`);
+    window.location.href = `/${schema}/inicio`;
 }
 
 function showLoading(show) {

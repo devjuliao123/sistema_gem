@@ -65,8 +65,14 @@ class Database:
             cur.close()
             conn.close()
 
-    def get_connection(self):
-        return self._get_connection(self.db_name)
+    def get_connection(self, schema=None):
+        conn = self._get_connection(self.db_name)
+        if schema:
+            cur = conn.cursor()
+            # search_path is safe here if schema is validated by regex in service
+            cur.execute(f"SET search_path TO {schema}, public")
+            cur.close()
+        return conn
 
     def get_cursor(self, conn):
         return conn.cursor(cursor_factory=RealDictCursor)
