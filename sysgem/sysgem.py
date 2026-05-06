@@ -1,12 +1,12 @@
 from flask import Flask, jsonify
 import logging
 import os
-from db.database import Database
-from services.organization_service import OrganizationService
-from services.gem_service import GemService
-from routes.main_routes import main_bp
-from routes.organization_routes import org_bp
-from routes.gem_routes import gem_bp
+from sysgem_db.database import Database
+from sysgem_services.organization_service import OrganizationService
+from sysgem_services.gem_service import GemService
+from sysgem_routes.main_routes import main_bp
+from sysgem_routes.organization_routes import org_bp
+from sysgem_routes.gem_routes import gem_bp
 
 def create_app():
     app = Flask(__name__,
