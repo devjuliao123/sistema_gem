@@ -1,12 +1,12 @@
 from flask import Flask, jsonify
 import logging
 import os
-from app.db.database import Database
-from app.services.organization_service import OrganizationService
-from app.services.gem_service import GemService
-from app.routes.main_routes import main_bp
-from app.routes.organization_routes import org_bp
-from app.routes.gem_routes import gem_bp
+from db.database import Database
+from services.organization_service import OrganizationService
+from services.gem_service import GemService
+from routes.main_routes import main_bp
+from routes.organization_routes import org_bp
+from routes.gem_routes import gem_bp
 
 def create_app():
     app = Flask(__name__,
@@ -18,7 +18,7 @@ def create_app():
         level=logging.INFO,
         format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
         handlers=[
-            logging.FileHandler("app.log"),
+            logging.FileHandler("sysgem.log"),
             logging.StreamHandler()
         ]
     )

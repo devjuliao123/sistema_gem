@@ -5,7 +5,9 @@ import os
 class OrganizationService:
     def __init__(self, db):
         self.db = db
-        self.schema_sql_path = os.path.join(os.getcwd(), "schema", "schema_base.sql")
+        # Base path relative to this file's directory
+        base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        self.schema_sql_path = os.path.join(base_dir, "schema", "schema_base.sql")
 
     def list_all(self):
         conn = self.db.get_connection()
