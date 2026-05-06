@@ -21,6 +21,8 @@ class OrganizationService:
         if not nome:
             raise ValueError("Nome é obrigatório")
 
+        nome = nome.strip().upper()
+
         conn = self.db.get_connection()
         cur = conn.cursor()
         try:
@@ -95,6 +97,11 @@ class OrganizationService:
             conn.close()
 
     def validate_name(self, nome):
+        if not nome:
+            return False
+
+        nome = nome.strip().upper()
+
         conn = self.db.get_connection()
         cur = conn.cursor()
         try:

@@ -84,7 +84,8 @@ orgForm.addEventListener('submit', async (e) => {
             card.classList.add('animate__animated', 'animate__pulse');
             setTimeout(() => card.classList.remove('animate__animated', 'animate__pulse'), 1000);
 
-            showToast('Nuvem Sincronizada', `Organização "${nome}" implantada com sucesso!`, 'success');
+            const nomeCriado = result.data.nome;
+            showToast('Nuvem Sincronizada', `Organização "${nomeCriado}" implantada com sucesso!`, 'success');
             nomeInput.value = '';
             nomeInput.classList.remove('is-invalid');
             carregarOrganizacoes();
