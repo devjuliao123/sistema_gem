@@ -1,0 +1,56 @@
+from flask import Flask, jsonify
+import logging
+import os
+from app.db.database import Database
+from app.services.organization_service import OrganizationService
+from app.routes.main_routes import main_bp
+from app.routes.organization_routes import org_bp
+
+def create_app():
+    app = Flask(__name__,
+                static_folder='static',
+                template_folder='templates')
+
+    # Logging configuration
+    logging.basicConfig(
+        level=logging.INFO,
+        format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+        handlers=[
+            logging.FileHandler("app.log"),
+            logging.StreamHandler()
+        ]
+    )
+
+    # Database configuration
+    DB_CONFIG = {
+        "host": os.getenv("DB_HOST", "localhost"),
+        "port": os.getenv("DB_PORT", "5432"),
+        "user": os.getenv("DB_USER", "postgres"),
+        "password": os.getenv("DB_PASSWORD", "xbala"),
+        "database": os.getenv("DB_NAME", "db_gem")
+    }
+
+    db = Database(DB_CONFIG)
+    org_service = OrganizationService(db)
+
+    # Store service in app config for access in routes
+    app.config['ORG_SERVICE'] = org_service
+
+    # Register blueprints
+    app.register_blueprint(main_bp)
+    app.register_blueprint(org_bp)
+
+    # Global error handler for JSON responses
+    @app.errorhandler(404)
+    def not_found(e):
+        return jsonify({"ok": False, "erro": "Recurso não encontrado"}), 404
+
+    @app.errorhandler(500)
+    def internal_error(e):
+        return jsonify({"ok": False, "erro": "Erro interno do servidor"}), 500
+
+    return app
+
+if __name__ == "__main__":
+    app = create_app()
+    app.run(debug=True, port=5000)
