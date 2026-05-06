@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>GEM - Multi Tenant</title>
+</head>
+<body>
+
+<h2>Criar Nova Igreja</h2>
+
+<input type="text" id="nome" placeholder="Nome da igreja">
+<button onclick="criar()">Criar</button>
+
+<h3>Lista</h3>
+<ul id="lista"></ul>
+
+<script>
+async function carregar() {
+    const res = await fetch("/organizacoes")
+    const data = await res.json()
+    const ul = document.getElementById("lista")
+    ul.innerHTML = ""
+
+    data.forEach(o => {
+        const li = document.createElement("li")
+        li.innerText = `${o.numero} - ${o.nome} (${o.schema})`
+        ul.appendChild(li)
+    })
+}
+
+async function criar() {
+    const nome = document.getElementById("nome").value
+
+    await fetch("/criar", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({nome})
+    })
+
+    carregar()
+}
+
+carregar()
+</script>
+
+</body>
+</html>
